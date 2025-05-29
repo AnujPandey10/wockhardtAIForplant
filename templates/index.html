@@ -1,0 +1,1697 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wockhardt AI</title>
+    <!-- Bootstrap CSS and JS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+      :root {
+        /* Dark Theme (Google-inspired) */
+        --bg-color-dark: #1a1d21;
+        --text-color-dark: #e3e3e3;
+        --input-bg-dark: #2c3035;
+        --input-border-dark: #495057;
+        --bubble-ai-bg-dark: #2c3035;
+        --bubble-user-bg-dark: #005c99;
+        --button-bg-dark: #2c3035;
+        --button-border-dark: #495057;
+        --button-hover-bg-dark: #3a3f44;
+        --header-text-dark: #adb5bd;
+
+        /* Light Theme */
+        --bg-color-light: #ffffff;
+        --text-color-light: #212529;
+        --input-bg-light: #f8f9fa;
+        --input-border-light: #dee2e6;
+        --bubble-ai-bg-light: #f8f9fa;
+        --bubble-user-bg-light: #007bff;
+        --button-bg-light: #f8f9fa;
+        --button-border-light: #dee2e6;
+        --button-hover-bg-light: #e9ecef;
+        --header-text-light: #6c757d;
+      }
+
+      [data-bs-theme="dark"] {
+        --bg-color: var(--bg-color-dark);
+        --text-color: var(--text-color-dark);
+        --input-bg: var(--input-bg-dark);
+        --input-border: var(--input-border-dark);
+        --bubble-ai-bg: var(--bubble-ai-bg-dark);
+        --bubble-user-bg: var(--bubble-user-bg-dark);
+        --button-bg: var(--button-bg-dark);
+        --button-border: var(--button-border-dark);
+        --button-hover-bg: var(--button-hover-bg-dark);
+        --header-text: var(--header-text-dark);
+      }
+
+      [data-bs-theme="light"] {
+        --bg-color: var(--bg-color-light);
+        --text-color: var(--text-color-light);
+        --input-bg: var(--input-bg-light);
+        --input-border: var(--input-border-light);
+        --bubble-ai-bg: var(--bubble-ai-bg-light);
+        --bubble-user-bg: var(--bubble-user-bg-light);
+        --button-bg: var(--button-bg-light);
+        --button-border: var(--button-border-light);
+        --button-hover-bg: var(--button-hover-bg-light);
+        --header-text: var(--header-text-light);
+      }
+
+      /* Theme Toggle Button */
+      .theme-toggle {
+        background: none;
+        border: none;
+        color: var(--text-color);
+        cursor: pointer;
+        padding: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.95rem;
+        transition: opacity 0.2s ease;
+      }
+
+      .theme-toggle:hover {
+        opacity: 0.8;
+      }
+
+      .theme-toggle i {
+        font-size: 1.1rem;
+      }
+
+      body {
+        background-color: var(--bg-color);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        color: var(--text-color);
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        margin: 0;
+      }
+
+      /* Update header styles */
+      .app-header {
+        padding: 0.75rem 1.5rem;
+        background-color: var(--bg-color);
+        border-bottom: 1px solid var(--input-border);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+      }
+
+      .app-header h2 {
+        margin: 0;
+        font-size: 1.35rem;
+        font-weight: 500;
+        color: var(--text-color);
+        white-space: nowrap;
+        min-width: fit-content; /* Prevent title from shrinking */
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        flex: 1;  /* Allow header-left to take available space */
+      }
+
+      .chat-modes {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        padding: 0;
+        margin: 0;
+        justify-content: center;  /* Center the mode buttons */
+        flex: 1;  /* Take available space in header-left */
+      }
+
+      .header-controls {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+      }
+
+      .header-controls .btn {
+        white-space: nowrap;
+      }
+
+      /* Upload related styles */
+      .upload-container {
+        position: relative;
+        display: inline-block;
+      }
+
+      .upload-dropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background-color: var(--bg-color);
+        border: 1px solid var(--input-border);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-top: 0.5rem;
+        min-width: 300px;
+        display: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        z-index: 1000;
+      }
+
+      .upload-container.active .upload-dropdown {
+        display: block;
+      }
+
+      .file-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-color);
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+      }
+
+      .processing-indicator {
+        display: none;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-color);
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+      }
+
+      .upload-progress {
+        height: 4px;
+        margin-top: 0.5rem;
+        background-color: var(--input-border);
+        border-radius: 2px;
+        overflow: hidden;
+        display: none;
+      }
+
+      .upload-progress .progress-bar {
+        background-color: var(--bubble-user-bg);
+        height: 100%;
+        width: 0%;
+        transition: width 0.3s ease;
+      }
+
+      .chat-modes {
+        padding: 0.2rem;
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        background-color: var(--bg-color);
+      }
+
+      .main-content {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        max-width: 1000px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 0;
+        overflow: hidden;
+      }
+
+      .chat-container {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        max-width: 1000px;
+        margin: 0 auto;
+        width: 100%;
+      }
+
+      .message {
+        display: flex;
+        max-width: 85%;
+        align-self: flex-start;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: messageAppear 0.3s ease forwards;
+      }
+
+      @keyframes messageAppear {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .message.user-message {
+        align-self: flex-end;
+      }
+
+      .bubble {
+        padding: 1rem 1.25rem;
+        border-radius: 16px;
+        word-wrap: break-word;
+        background: var(--bubble-ai-bg);
+        color: var (--text-color);
+        line-height: 1.6;
+        font-size: 0.95rem;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .bubble h3 {
+        margin: 1.2em 0 0.8em;
+        color: #e3e3e3;
+        font-size: 1.1em;
+        font-weight: 600;
+      }
+
+      .bubble strong {
+        color: #e3e3e3;
+      }
+
+      .bubble code {
+        background: #2a2e32;
+        padding: 0.2em 0.4em;
+        border-radius: 4px;
+        font-family: 'Consolas', monospace;
+        font-size: 0.9em;
+      }
+
+      .bubble ul, .bubble ol {
+        padding-left: 1.5em;
+        margin: 0.8em 0;
+      }
+
+      .bubble li {
+        margin: 0.5em 0;
+      }
+
+      .bubble p {
+        margin: 0.8em 0;
+      }
+
+      .user-message .bubble {
+        background: var(--bubble-user-bg);
+        color: #ffffff;
+      }
+
+      .chat-input-container {
+        padding: 0.1rem;
+        background-color: var (--bg-color);
+        position: relative;
+      }
+
+      .chat-input {
+        max-width: 1000px;
+        margin: 0 auto;
+        background-color: var(--input-bg);
+        border: 1px solid var(--input-border);
+        border-radius: 12px;
+        padding: 0.875rem;
+        display: flex;
+        gap: 1rem;
+        align-items: flex-end;
+        transition: all 0.2s ease;
+      }
+
+      .chat-input:focus-within {
+        border-color: var(--bubble-user-bg);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .chat-input textarea {
+        flex-grow: 1;
+        background: none;
+        border: none;
+        color: var(--text-color);
+        font-size: 0.95rem;
+        padding: 0;
+        outline: none;
+        resize: none;
+        overflow-y: auto;
+        min-height: 24px;
+        max-height: 200px;
+        line-height: 1.5;
+      }
+
+      .chat-input textarea::placeholder {
+        color: var(--header-text);
+      }
+
+      .chat-input button {
+        background-color: var(--bubble-user-bg);
+        border: none;
+        color: white;
+        padding: 0.625rem 1.25rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-weight: 500;
+        font-size: 0.95rem;
+      }
+
+      .chat-input button:hover {
+        background-color: var(--bubble-user-bg);
+        opacity: 0.9;
+        transform: translateY(-1px);
+      }
+
+      .file-upload {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .file-upload input[type="file"] {
+        display: none;
+      }
+
+      .file-upload label {
+        background-color: var(--button-bg);
+        border: 1px solid var(--input-border);
+        color: var(--text-color);
+        padding: 0.5rem 1.25rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.95rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+      }
+
+      .file-upload label:hover {
+        background-color: var(--button-hover-bg);
+        transform: translateY(-1px);
+      }
+
+      .file-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-color);
+        font-size: 0.9rem;
+      }
+
+      .file-name {
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .progress {
+        height: 4px;
+        margin-top: 0.5rem;
+        background-color: var(--input-border);
+        border-radius: 2px;
+        overflow: hidden;
+        display: none;
+      }
+
+      .progress-bar {
+        background-color: #1a73e8;
+        transition: width 0.3s ease;
+      }
+
+      .modal-dialog {
+        max-width: 600px;
+        margin: 1.75rem auto;
+      }
+
+      .modal-content {
+        background-color: var(--bg-color);
+        border: 1px solid var(--input-border);
+        border-radius: 8px;
+      }
+
+      .modal-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--input-border);
+      }
+
+      .modal-body {
+        padding: 1.5rem;
+      }
+
+      .modal-footer {
+        padding: 1.25rem 1.5rem;
+        border-top: 1px solid var(--input-border);
+      }
+
+      .modal-body h6 {
+        color: var(--text-color);
+        margin-bottom: 1rem;
+        font-size: 1rem;
+        font-weight: 600;
+      }
+
+      .modal-body p {
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+      }
+
+      .modal-body ul {
+        margin-bottom: 1.5rem;
+      }
+
+      .modal-body li {
+        margin-bottom: 0.75rem;
+      }
+
+      .btn-close {
+        filter: invert(1);
+      }
+
+      .mode-button {
+        padding: 0.4rem 1rem;
+        font-size: 0.9rem;
+        border-radius: 6px;
+        white-space: nowrap;
+      }
+
+      .mode-button.active {
+        background-color: var(--bubble-user-bg);
+        border-color: var(--bubble-user-bg);
+        color: white;
+      }
+
+      .mode-button:hover:not(.active) {
+        background-color: var(--button-hover-bg);
+        transform: translateY(-1px);
+      }
+
+      .processing-indicator {
+        display: none;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-color);
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+      }
+
+      .processing-indicator .spinner {
+        width: 16px;
+        height: 16px;
+        border: 2px solid var (--text-color);
+        border-top-color: transparent;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+
+      .mode-button.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: none;
+      }
+
+      /* Update SOP selection styles */
+      .sop-selection {
+        padding: 1.5rem;
+        background-color: var(--bg-color);
+        border-bottom: 1px solid var(--input-border);
+        transition: all 0.3s ease;
+        margin-bottom: 1rem;
+      }
+
+      .sop-selection.hidden {
+        display: none !important;
+      }
+
+      .sop-selection.minimized {
+        padding: 1rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .sop-list {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .sop-header {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+      }
+
+      .sop-selection.minimized .sop-header {
+        margin-bottom: 0.5rem;
+      }
+
+      .sop-header h5 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: var(--text-color);
+        flex-shrink: 0;
+      }
+
+      .folder-select {
+        padding: 0.625rem 1rem;
+        border-radius: 8px;
+        border: 1px solid var(--input-border);
+        background-color: var(--input-bg);
+        color: var(--text-color);
+        min-width: 250px;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+      }
+
+      .folder-select:hover, .folder-select:focus {
+        border-color: var(--bubble-user-bg);
+        outline: none;
+      }
+
+      .sop-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+        max-height: 400px;
+        overflow-y: auto;
+        padding-right: 0.5rem;
+        transition: all 0.3s ease;
+      }
+
+      .sop-selection.minimized .sop-cards {
+        max-height: 200px;
+      }
+
+      .sop-card {
+        background: var(--input-bg);
+        border: 1px solid var(--input-border);
+        border-radius: 10px;
+        padding: 1rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .sop-card:hover {
+        background: var(--button-hover-bg);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .sop-card.selected {
+        background: var(--bubble-user-bg);
+        border-color: var(--bubble-user-bg);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      .sop-card h6 {
+        margin: 0;
+        font-size: 1rem;
+        color: var(--text-color);
+        line-height: 1.4;
+        font-weight: 500;
+      }
+
+      .sop-card p {
+        margin: 0;
+        font-size: 0.9rem;
+        color: var(--header-text);
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        line-height: 1.5;
+      }
+
+      .sop-card .category {
+        display: inline-block;
+        background: var(--button-bg);
+        color: var(--text-color);
+        padding: 0.25rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        align-self: flex-start;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .sop-card.selected .category,
+      .sop-card.selected h6,
+      .sop-card.selected p {
+        color: white;
+      }
+
+      /* MCQ Button Styles */
+      .mcq-button-container {
+        display: none;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+      }
+
+      .mcq-button {
+        background-color: var(--bubble-user-bg);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 0.75rem 1.5rem;
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        transition: all 0.3s ease;
+        animation: bounceIn 0.5s ease;
+      }
+
+      .mcq-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+      }
+
+      .mcq-button i {
+        font-size: 1.1rem;
+      }
+
+      @keyframes bounceIn {
+        0% {
+          opacity: 0;
+          transform: scale(0.3);
+        }
+        50% {
+          opacity: 0.9;
+          transform: scale(1.1);
+        }
+        80% {
+          opacity: 1;
+          transform: scale(0.9);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      .info-container {
+        position: relative;
+        display: inline-block;
+      }
+
+      .info-button {
+        background-color: var(--button-bg);
+        border: 1px solid var(--input-border);
+        color: var(--text-color);
+        padding: 0.5rem 1.25rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.95rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+      }
+
+      .info-button:hover {
+        background-color: var(--button-hover-bg);
+        transform: translateY(-1px);
+      }
+
+      .info-dropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background-color: var(--bg-color);
+        border: 1px solid var (--input-border);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-top: 0.5rem;
+        min-width: 200px;
+        display: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        z-index: 1000;
+      }
+
+      .info-container.active .info-dropdown {
+        display: block;
+      }
+
+      .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        color: var(--text-color);
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .dropdown-item:hover {
+        background-color: var(--button-hover-bg);
+        transform: translateY(-1px);
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+      }
+
+      .chat-modes {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        padding: 0;
+        margin: 0;
+      }
+
+      /* Base suggestion styles */
+      .suggestions-wrapper {
+        width: 100%;
+        margin: 1rem 0;
+        padding: 0.5rem;
+        background: transparent;
+        position: relative;
+      }
+
+      .suggestions-scroll {
+        display: flex;
+        gap: 0.75rem;
+        padding: 0.5rem 0;
+        overflow-x: auto;
+        scroll-behavior: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        scrollbar-color: var(--input-border) transparent;
+      }
+
+      .suggestions-scroll::-webkit-scrollbar {
+        height: 6px;
+      }
+      .suggestions-scroll::-webkit-scrollbar-thumb {
+        background: var(--input-border);
+        border-radius: 3px;
+      }
+
+      .suggestion-chip {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        background: var(--bubble-user-bg);
+        color: white;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 0.95rem;
+        font-weight: 500;
+        white-space: nowrap;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        border: none;
+        margin: 0 0.25rem;
+        opacity: 1;
+        transform: none;
+      }
+
+      .suggestion-chip:hover {
+        background: var(--button-hover-bg);
+        filter: brightness(110%);
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeOut {
+        from {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        to {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+      }
+
+      .welcome-message .bubble {
+        text-align: center;
+        align-items: center;
+        justify-content: center;
+      }
+      .welcome-message .bubble ul {
+        display: inline-block;
+        text-align: left;
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-header">
+      <div class="header-left">
+        <h2>Wockhardt AI</h2>
+        <div class="chat-modes">
+          <button class="mode-button active" data-mode="general">AI Assistant</button>
+          <button class="mode-button" data-mode="preloaded">SOP Assistant</button>
+          <button class="mode-button" data-mode="upload">Uploaded Document Assistant</button>
+        </div>
+      </div>
+      <div class="header-controls">
+        <button class="theme-toggle" onclick="toggleTheme()">
+          <i class="fas fa-moon"></i>
+          <span>Dark Mode</span>
+        </button>
+        <div class="info-container">
+          <button class="btn info-button">
+            <i class="fas fa-info-circle"></i>
+          </button>
+          <div class="info-dropdown">
+            <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#useCasesModal">
+              <i class="fas fa-lightbulb me-2"></i>Use Cases
+            </button>
+            <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#helpModal">
+              <i class="fas fa-circle-question me-2"></i>Help
+            </button>
+            <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#infoModal">
+              <i class="fas fa-circle-info me-2"></i>About
+            </button>
+          </div>
+        </div>
+        <div class="upload-container">
+          <label class="upload-button" for="pdf-file">
+            <i class="fas fa-upload me-1"></i>
+            Upload File
+          </label>
+          <div class="upload-dropdown">
+            <input type="file" id="pdf-file" accept=".pdf,.docx" onchange="handleFileSelect(event)">
+            <div id="file-info" class="file-info" style="display: none;">
+              <i class="fas fa-file-pdf"></i>
+              <span id="selected-file-name" class="file-name"></span>
+            </div>
+            <button id="upload-btn" class="btn btn-primary mt-2" onclick="uploadFile()" style="display: none;">Upload</button>
+            <div class="upload-progress" id="upload-progress">
+              <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+            </div>
+            <div id="processing-indicator" class="processing-indicator">
+              <div class="spinner"></div>
+              <span>Processing document... This may take a few moments.</span>
+            </div>
+          </div>
+        </div>
+        <button class="btn" onclick="clearConversation()">
+          <i class="fas fa-trash-alt me-1"></i>
+          Clear Chat
+        </button>
+      </div>
+    </div>
+
+    <!-- Use Cases Modal -->
+    <div class="modal fade" id="useCasesModal" tabindex="-1" aria-labelledby="useCasesModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="useCasesModalLabel">Wockhardt AI Use Cases</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <h6>Document Analysis</h6>
+            <ul>
+              <li><strong>SOP Review:</strong> Quickly analyze Standard Operating Procedures and get instant answers to specific questions</li>
+              <li><strong>AI Assistant:</strong> Get insights on any research topic from AI</li>
+              <li><strong>Knowledge Extraction:</strong> Extract key information from lengthy documents</li>
+            </ul>
+
+            <h6>Learning & Training</h6>
+            <ul>
+              <li><strong>Interactive Learning:</strong> Use the MCQ feature to test understanding of documents</li>
+              <li><strong>Process Understanding:</strong> Get step-by-step explanations of complex procedures</li>
+              <li><strong>Quick Reference:</strong> Find specific information without reading entire documents</li>
+            </ul>
+
+            <h6>Document Management</h6>
+            <ul>
+              <li><strong>Document Upload:</strong> Upload and analyze new documents instantly</li>
+            </ul>
+            <h6>Writtin Assistant</h6>
+            <ul>
+              <li><strong>Rewrite:</strong>Write anything more faster and accurate.</li>
+              <li><strong>Grammer Check:</strong>Write with confidence</li>
+            </ul>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div id="sop-selection" class="sop-selection hidden">
+        <div class="sop-list">
+          <div class="sop-header">
+            <h5>Select an SOP Document</h5>
+            <select id="folder-select" class="folder-select" onchange="loadSOPsInFolder()">
+              <option value="">Select a folder...</option>
+            </select>
+            <select id="subfolder-select" class="folder-select" style="display:none; margin-left: 1rem;" onchange="loadSOPsInSubfolder()">
+              <option value="">Select a subfolder...</option>
+            </select>
+          </div>
+          <div id="sop-cards" class="sop-cards"></div>
+        </div>
+      </div>
+      <div id="chat-container" class="chat-container">
+        <div class="welcome-message message bot-message">
+          <div class="bubble">
+            <p>👋 Welcome to Wockhardt AI!</p>
+            <p>I'm here to help you with:</p>
+            <ul>
+              <li>Analyzing documents and SOPs</li>
+              <li>Answering questions about uploaded files</li>
+              <li>Generating quizzes for learning</li>
+              <li>And much more!</li>
+            </ul>
+          </div>
+        </div>
+        <div class="suggestions-message message bot-message">
+          <div class="suggestions-wrapper">
+            <div class="suggestions-scroll">
+              <button class="suggestion-chip" onclick="handleSuggestion('How can you help me with research?')">🔍 Research help</button>
+              <button class="suggestion-chip" onclick="handleSuggestion('Can you help me write better?')">✍️ Writing tips</button>
+              <button class="suggestion-chip" onclick="handleSuggestion('Explain a complex topic simply')">💡 Explain topic</button>
+              <button class="suggestion-chip" onclick="handleSuggestion('Tell me a joke')">😄 Tell me a joke</button>
+              <button class="suggestion-chip" onclick="handleSuggestion('You are an advanced AI specializing in professional communication.Your task is to enhance the email which i will give next by making it more professional and error-free.Focus on improving the tone, clarity, structure, and grammar while maintaining the original message intent.Ensure that the final output is polite and appropriate for a business context.')" > 🖋️ Rewrite this E-mail</button>
+              <button class="suggestion-chip" onclick="handleSuggestion('Make this email prefessional and error free')" > Rewrite this e-mail</button>
+              <button class="suggestion-chip" onclick="handleSuggestion('Help me analyze a document')">📄 Document analysis</button>
+              <button class="suggestion-chip" onclick="handleSuggestion('Generate practice questions')">❓ Generate quiz</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="chat-input-container">
+        <div class="chat-input">
+          <textarea id="user-input" placeholder="Type your message...Press Shift+Enter for new line" rows="1"></textarea>
+          <button onclick="sendMessage()">Send</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MCQ Button -->
+    <div id="mcq-button-container" class="mcq-button-container">
+      <button class="mcq-button" onclick="generateMCQs()">
+        <i class="fas fa-brain"></i>
+        Test Your Knowledge
+      </button>
+    </div>
+
+    <!-- Help Modal -->
+    <div class="modal fade" id="helpModal" tabindex="-1" aria-labelledby="helpModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="helpModalLabel">How to Use Wockhardt AI Chat</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <h6>Features</h6>
+            <ul>
+              <li><strong>General Chat:</strong> Have general conversations with the AI assistant</li>
+              <li><strong>Document Analysis:</strong> Upload and analyze PDF or DOCX files</li>
+              <li><strong>Preloaded Documents:</strong> Access and query pre-existing documents</li>
+              <li><strong>Context Awareness:</strong> AI remembers conversation history within sessions</li>
+            </ul>
+
+            <h6>Step-by-Step Guide</h6>
+            <ol>
+              <li><strong>Select Chat Mode:</strong>
+                <ul>
+                  <li>General Chat: For regular conversations</li>
+                  <li>Preloaded Documents: To query existing documents</li>
+                  <li>Uploaded Document: To work with your own files</li>
+                </ul>
+              </li>
+              <li><strong>Upload Documents (if needed):</strong>
+                <ul>
+                  <li>Click "Upload File" at the bottom</li>
+                  <li>Select a PDF or DOCX file</li>
+                  <li>Click "Upload" and wait for processing</li>
+                </ul>
+              </li>
+              <li><strong>Start Chatting:</strong>
+                <ul>
+                  <li>Type your message in the input box</li>
+                  <li>Press Enter or click Send</li>
+                  <li>Wait for AI response</li>
+                </ul>
+              </li>
+            </ol>
+
+            <h6>Tips</h6>
+            <ul>
+              <li>Use clear, specific questions for better responses</li>
+              <li>Watch the progress bar when uploading documents</li>
+              <li>Use "Clear Chat" to start a fresh conversation</li>
+            </ul>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info Modal -->
+    <div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header"></div>
+            <h5 class="modal-title" id="infoModalLabel">About Wockhardt AI</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-4"></div>
+              <h6>Developer Info:</h6>
+              <p class="mb-1"><strong>Name:</strong> Anuj Pandey</p>
+              <p class="mb-1"><strong>Role:</strong> Data Scientist</p>
+              <p class="mb-1"><strong>Contact:</strong> 4224</p>
+            </div>
+
+            <div class="mb-4">
+              <h6>About the System</h6>
+              <p>Wockhardt AI is an intelligent chat system designed to help employees interact with documents and get quick, accurate responses. It combines advanced natural language processing with document analysis capabilities to provide a seamless experience.</p>
+            </div>
+
+            <div>
+              <h6>Key Capabilities</h6>
+              <ul>
+                <li>Natural language understanding</li>
+                <li>PDF and DOCX document processing</li>
+                <li>Context-aware conversations</li>
+                <li>Real-time response generation</li>
+              </ul>
+            </div>
+          </div>
+          <div class="modal-footer"></div>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const chatContainer = document.getElementById('chat-container');
+      const userInput = document.getElementById('user-input');
+      let currentMode = 'general';
+
+      // Initialization for suggestions and welcome message
+      document.addEventListener('DOMContentLoaded', () => {
+        // Clear any existing content
+        chatContainer.innerHTML = '';
+        
+        // Add welcome message
+        const welcomeMessageHTML = `
+          <div class="message bot-message">
+            <div class="bubble">
+              <p>👋 Welcome to Wockhardt AI!</p>
+              <p>I'm here to help you with:</p>
+              <ul>
+                <li>Analyzing documents and SOPs</li>
+                <li>Answering questions about uploaded files</li>
+                <li>Generating quizzes for learning</li>
+                <li>And much more!</li>
+              </ul>
+            </div>
+          </div>
+          <div class="message bot-message">
+            <div class="suggestions-wrapper">
+              <div class="suggestions-scroll">
+                <button class="suggestion-chip" onclick="handleSuggestion('You are an advanced AI specializing in professional communication.Your task is to enhance the email which i will give next by making it more professional and error-free.Focus on improving the tone, clarity, structure, and grammar while maintaining the original message intent.Ensure that the final output is polite and appropriate for a business context.')" > 🖋️ Refine my E-mail</button>
+                <button class="suggestion-chip" onclick="handleSuggestion('How can you help me with research?')">🔍 Research help</button>
+                <button class="suggestion-chip" onclick="handleSuggestion('Can you help me write better?')">✍️ Writing tips</button>
+                <button class="suggestion-chip" onclick="handleSuggestion('Explain the following complex topic which i will provide next in a straightforward manner that is accessible to a general audience with no prior knowledge of the subject.Use simple language, break down the concepts into clear, digestible parts, and provide relatable examples or analogies where applicable.Ensure that the explanation is engaging and avoids jargon.')">💡 Explain topic</button>
+                <button class="suggestion-chip" onclick="handleSuggestion('Tell me a joke')">😄 Tell me a joke</button>
+                <button class="suggestion-chip" onclick="handleSuggestion('Help me analyze a document')">📄 Document analysis</button>
+                <button class="suggestion-chip" onclick="handleSuggestion('Generate practice questions')">❓ Generate quiz</button>
+              </div>
+            </div>
+          </div>`;
+        
+        chatContainer.innerHTML = welcomeMessageHTML;
+      });
+
+      // Function to handle suggestion clicks
+      function handleSuggestion(text) {
+        userInput.value = text;
+        sendMessage();
+        
+        // Remove suggestions after clicking
+        const suggestionsWrapper = document.querySelector('.suggestions-wrapper');
+        if (suggestionsWrapper) {
+          suggestionsWrapper.style.animation = 'fadeOut 0.3s ease forwards';
+          setTimeout(() => {
+            const messageElement = suggestionsWrapper.closest('.message');
+            if (messageElement) {
+              messageElement.remove();
+            }
+          }, 300);
+        }
+      }
+
+      // Function to adjust textarea height dynamically
+      function adjustTextareaHeight() {
+        userInput.style.height = 'auto';
+        userInput.style.height = userInput.scrollHeight + 'px';
+      }
+
+      // Event listener for input to adjust height
+      userInput.addEventListener('input', adjustTextareaHeight);
+
+      // Event listener for Enter and Shift + Enter
+      userInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage();
+        }
+      });
+
+      // Chat mode buttons
+      document.querySelectorAll('.mode-button').forEach(button => {
+        button.addEventListener('click', () => {
+          if (button.classList.contains('disabled')) {
+            return; // Do nothing if button is disabled
+          }
+          document.querySelectorAll('.mode-button').forEach(b => b.classList.remove('active'));
+          button.classList.add('active');
+          currentMode = button.dataset.mode;
+          
+          // Show/hide SOP selection for preloaded mode
+          const sopSelection = document.getElementById('sop-selection');
+          if (currentMode === 'preloaded') {
+            sopSelection.classList.remove('hidden');
+            sopSelection.style.display = 'block';
+            loadFolders(); // Load folders when switching to preloaded mode
+          } else {
+            sopSelection.style.display = 'none';
+          }
+          
+          // Clear any existing chat
+          clearChat();
+        });
+      });
+
+      function appendMessage(message, isUser) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+        const bubbleDiv = document.createElement('div');
+        bubbleDiv.className = 'bubble';
+        
+        if (isUser) {
+          bubbleDiv.textContent = message;
+        } else {
+          let formattedMessage = message
+            .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+            .replace(/`([^`]+)`/g, '<code>$1</code>')
+            .replace(/### ([^\n]+)/g, '<h3>$1</h3>')
+            .replace(/\n\n/g, '<br><br>');
+          
+          bubbleDiv.innerHTML = formattedMessage;
+        }
+        
+        messageDiv.appendChild(bubbleDiv);
+        chatContainer.appendChild(messageDiv);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+      }
+
+      function handleFileSelect(event) {
+        const file = event.target.files[0];
+        const fileInfo = document.getElementById('file-info');
+        const fileName = document.getElementById('selected-file-name');
+        const uploadBtn = document.getElementById('upload-btn');
+        const processingIndicator = document.getElementById('processing-indicator');
+        
+        if (file) {
+          fileName.textContent = file.name;
+          fileInfo.style.display = 'flex';
+          uploadBtn.style.display = 'inline-block';
+          processingIndicator.style.display = 'none';
+        } else {
+          fileInfo.style.display = 'none';
+          uploadBtn.style.display = 'none';
+          processingIndicator.style.display = 'none';
+        }
+      }
+
+      async function uploadFile() {
+        const fileInput = document.getElementById('pdf-file');
+        const file = fileInput.files[0];
+        const processingIndicator = document.getElementById('processing-indicator');
+        const uploadBtn = document.getElementById('upload-btn');
+        
+        if (!file) {
+          alert('Please select a file first.');
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        uploadBtn.disabled = true;
+        processingIndicator.style.display = 'flex';
+        const progressBar = document.getElementById('upload-progress');
+        if(progressBar) {
+          progressBar.style.display = 'none';
+        }
+
+        try {
+          const response = await fetch('/upload', {
+            method: 'POST',
+            body: formData
+          });
+          const result = await response.json();
+          if (response.ok) {
+            alert('File uploaded and processed successfully!');
+            document.querySelector('.mode-button[data-mode="upload"]').click();
+            processingIndicator.style.display = 'none';
+            uploadBtn.disabled = true;
+          } else {
+            alert(result.error || 'Error processing file on server.');
+            processingIndicator.style.display = 'none';
+            uploadBtn.disabled = false;
+          }
+        } catch (error) {
+          console.error("Error during file upload:", error);
+          alert('Error uploading file. Please check network or try again.');
+          processingIndicator.style.display = 'none';
+          uploadBtn.disabled = false;
+        }
+      }
+
+      async function clearConversation() {
+        try {
+          const response = await fetch('/clear_conversation', {
+            method: 'POST'
+          });
+          const result = await response.json();
+          if (response.ok) {
+            chatContainer.innerHTML = '';
+            alert('Conversation cleared!');
+          }
+        } catch (error) {
+          alert('Error clearing conversation');
+        }
+      }
+
+      async function sendMessage() {
+        const message = userInput.value.trim();
+        if (!message) return;
+
+        appendMessage(message, true);
+        userInput.value = '';
+        adjustTextareaHeight();
+
+        try {
+          const response = await fetch('/chat', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              message: message,
+              chat_mode: currentMode
+            })
+          });
+
+          const reader = response.body.getReader();
+          let botResponse = '';
+
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+
+            const text = new TextDecoder().decode(value);
+            const lines = text.split('\n');
+
+            for (const line of lines) {
+              if (line.startsWith('data:')) {
+                const data = line.slice(5).trim();
+                if (data === '[DONE]') break;
+                try {
+                  const jsonData = JSON.parse(data);
+                  if (jsonData.response) {
+                    botResponse += jsonData.response;
+                    const lastMessage = chatContainer.lastElementChild;
+                    if (lastMessage && !lastMessage.classList.contains('user-message')) {
+                      lastMessage.querySelector('.bubble').innerHTML = botResponse
+                        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+                        .replace(/`([^`]+)`/g, '<code>$1</code>')
+                        .replace(/### ([^\n]+)/g, '<h3>$1</h3>')
+                        .replace(/\n\n/g, '<br><br>');
+                    } else {
+                      appendMessage(botResponse, false);
+                    }
+                  }
+                } catch (e) {
+                  console.error('Error parsing JSON:', e);
+                }
+              }
+            }
+          }
+        } catch (error) {
+          appendMessage('Error: Could not get response', false);
+        }
+      }
+
+      async function loadFolders() {
+        try {
+          const response = await fetch('/get_sop_folders');
+          const folders = await response.json();
+          
+          const folderSelect = document.getElementById('folder-select');
+          folderSelect.innerHTML = '<option value="">Select a folder...</option>' +
+            folders.map(folder => `<option value="${folder}">${folder}</option>`).join('');
+        } catch (error) {
+          console.error('Error loading folders:', error);
+        }
+      }
+
+      async function loadSOPsInFolder() {
+        const folderSelect = document.getElementById('folder-select');
+        const subfolderSelect = document.getElementById('subfolder-select');
+        const selectedFolder = folderSelect.value;
+        const sopCards = document.getElementById('sop-cards');
+
+        if (!selectedFolder) {
+          sopCards.innerHTML = '<p>Please select a folder first</p>';
+          subfolderSelect.style.display = 'none';
+          return;
+        }
+        try {
+          // Load SOPs in main folder (not recursive)
+          const response = await fetch(`/get_sops/${selectedFolder}`);
+          const sops = await response.json();
+          sopCards.innerHTML = '';
+          if (sops.length === 0) {
+            sopCards.innerHTML = '<p>No SOPs found in this folder</p>';
+          } else {
+            sops.forEach(sop => {
+              const card = document.createElement('div');
+              card.className = 'sop-card';
+              card.innerHTML = `
+                <span class="category">${sop.category}</span>
+                <h6>${sop.title}</h6>
+                <p>${sop.description}</p>
+              `;
+              card.onclick = () => selectSOP(sop.id);
+              sopCards.appendChild(card);
+            });
+          }
+
+          // Load subfolders
+          const subfolderResp = await fetch(`/get_subfolders/${selectedFolder}`);
+          const subfolders = await subfolderResp.json();
+          if (subfolders.length > 0) {
+            subfolderSelect.style.display = '';
+            subfolderSelect.innerHTML = '<option value="">Select a subfolder...</option>' +
+              subfolders.map(sf => `<option value="${sf}">${sf}</option>`).join('');
+          } else {
+            subfolderSelect.style.display = 'none';
+          }
+        } catch (error) {
+          sopCards.innerHTML = '<p>Error loading SOPs. Please try again.</p>';
+          subfolderSelect.style.display = 'none';
+        }
+      }
+
+      async function loadSOPsInSubfolder() {
+        const folderSelect = document.getElementById('folder-select');
+        const subfolderSelect = document.getElementById('subfolder-select');
+        const selectedFolder = folderSelect.value;
+        const selectedSubfolder = subfolderSelect.value;
+        const sopCards = document.getElementById('sop-cards');
+        if (!selectedSubfolder) {
+          // If no subfolder selected, show main folder SOPs
+          loadSOPsInFolder();
+          return;
+        }
+        try {
+          const response = await fetch(`/get_sops/${selectedFolder}/${selectedSubfolder}`);
+          const sops = await response.json();
+          sopCards.innerHTML = '';
+          if (sops.length === 0) {
+            sopCards.innerHTML = '<p>No SOPs found in this subfolder</p>';
+          } else {
+            sops.forEach(sop => {
+              const card = document.createElement('div');
+              card.className = 'sop-card';
+              card.innerHTML = `
+                <span class="category">${sop.category}</span>
+                <h6>${sop.title}</h6>
+                <p>${sop.description}</p>
+              `;
+              card.onclick = () => selectSOP(sop.id);
+              sopCards.appendChild(card);
+            });
+          }
+        } catch (error) {
+          sopCards.innerHTML = '<p>Error loading SOPs. Please try again.</p>';
+        }
+      }
+
+      async function loadPreloadedSOPs() {
+        try {
+          const response = await fetch('/get_sops');
+          const sops = await response.json();
+          
+          const sopCards = document.getElementById('sop-cards');
+          sopCards.innerHTML = '';
+          
+          sops.forEach(sop => {
+            const card = document.createElement('div');
+            card.className = 'sop-card';
+            card.innerHTML = `
+              <span class="category">${sop.category}</span>
+              <h6>${sop.title}</h6>
+              <p>${sop.description}</p>
+            `;
+            card.onclick = () => selectSOP(sop.id);
+            sopCards.appendChild(card);
+          });
+        } catch (error) {
+          console.error('Error loading SOPs:', error);
+        }
+      }
+
+      async function selectSOP(sopId) {
+        try {
+            // Remove previous selection
+            document.querySelectorAll('.sop-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked card
+            const selectedCard = event.currentTarget;
+            selectedCard.classList.add('selected');
+            
+            // Completely hide the SOP selection area
+            const sopSelection = document.getElementById('sop-selection');
+            sopSelection.classList.add('hidden');
+            
+            const response = await fetch(`/select_sop/${sopId}`);
+            const result = await response.json();
+            
+            if (result.error) {
+                appendMessage('Error: ' + result.error, false);
+                return;
+            }
+            
+            // Show the MCQ button
+            document.getElementById('mcq-button-container').style.display = 'block';
+            
+            // Show prompt to start asking questions
+            appendMessage('SOP selected. You can now ask any questions about this SOP. To select a different SOP, click the "Preloaded Documents Assistant" button again.', false);
+            
+        } catch (error) {
+            console.error('Error selecting SOP:', error);
+            appendMessage('Error processing SOP. Please try again.', false);
+        }
+      }
+
+      async function generateMCQs() {
+        try {
+            // Show user-friendly message in chat
+            appendMessage("Generating quiz questions...", true);
+            
+            // Detailed request to backend
+            const response = await fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: "Generate 10 multiple choice questions to test understanding of this SOP document. For each question, provide 4 options. Show answer of these mcqs at end of 10th mcq so that user can cross check his answer.",
+                    chat_mode: 'preloaded'  // Since we're asking about the selected SOP
+                })
+            });
+
+            const reader = response.body.getReader();
+            let botResponse = '';
+
+            while (true) {
+                const { value, done } = await reader.read();
+                if (done) break;
+
+                const text = new TextDecoder().decode(value);
+                const lines = text.split('\n');
+
+                for (const line of lines) {
+                    if (line.startsWith('data:')) {
+                        const data = line.slice(5).trim();
+                        if (data === '[DONE]') break;
+                        try {
+                            const jsonData = JSON.parse(data);
+                            if (jsonData.response) {
+                                botResponse += jsonData.response;
+                                const lastMessage = chatContainer.lastElementChild;
+                                if (lastMessage && !lastMessage.classList.contains('user-message')) {
+                                    lastMessage.querySelector('.bubble').innerHTML = botResponse
+                                        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+                                        .replace(/`([^`]+)`/g, '<code>$1</code>')
+                                        .replace(/### ([^\n]+)/g, '<h3>$1</h3>')
+                                        .replace(/\n\n/g, '<br><br>');
+                                } else {
+                                    appendMessage(botResponse, false);
+                                }
+                            }
+                        } catch (e) {
+                            console.error('Error parsing JSON:', e);
+                        }
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error generating MCQs:', error);
+            appendMessage('Error generating MCQs. Please try again.', false);
+        }
+      }
+
+      // Add function to maximize SOP selection area when clicking folder select
+      document.getElementById('folder-select').addEventListener('click', () => {
+        const sopSelection = document.getElementById('sop-selection');
+        sopSelection.classList.remove('minimized');
+      });
+
+      function clearChat() {
+        chatContainer.innerHTML = '';
+        // Reset SOP selection when switching modes
+        const sopSelection = document.getElementById('sop-selection');
+        if (sopSelection) {
+          sopSelection.classList.remove('minimized', 'hidden');
+        }
+        // Hide MCQ button when clearing chat
+        document.getElementById('mcq-button-container').style.display = 'none';
+      }
+
+      // Toggle upload dropdown
+      document.querySelector('.upload-container').addEventListener('click', function(e) {
+        e.stopPropagation();
+        this.classList.toggle('active');
+      });
+
+      // Close upload dropdown when clicking outside
+      document.addEventListener('click', function(e) {
+        if (!e.target.closest('.upload-container')) {
+          document.querySelector('.upload-container').classList.remove('active');
+        }
+      });
+
+      // Prevent dropdown from closing when clicking inside it
+      document.querySelector('.upload-dropdown').addEventListener('click', function(e) {
+        e.stopPropagation();
+      });
+
+      // Toggle info dropdown
+      document.querySelector('.info-container').addEventListener('click', function(e) {
+        e.stopPropagation();
+        this.classList.toggle('active');
+      });
+
+      // Close info dropdown when clicking outside
+      document.addEventListener('click', function(e) {
+        if (!e.target.closest('.info-container')) {
+          document.querySelector('.info-container').classList.remove('active');
+        }
+      });
+
+      // Prevent dropdown from closing when clicking inside it
+      document.querySelector('.info-dropdown').addEventListener('click', function(e) {
+        e.stopPropagation();
+      });
+
+      // Remove bottom upload section
+      document.querySelector('.upload-section').remove();
+
+      // Theme initialization
+      document.addEventListener('DOMContentLoaded', () => {
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        updateThemeToggleButton(savedTheme);
+      });
+
+      function updateThemeToggleButton(theme) {
+        const themeToggleButton = document.querySelector('.theme-toggle');
+        const themeIcon = themeToggleButton.querySelector('i');
+        const themeText = themeToggleButton.querySelector('span');
+
+        if (theme === 'dark') {
+          themeIcon.classList.remove('fa-sun');
+          themeIcon.classList.add('fa-moon');
+          themeText.textContent = 'Dark Mode';
+        } else {
+          themeIcon.classList.remove('fa-moon');
+          themeIcon.classList.add('fa-sun');
+          themeText.textContent = 'Light Mode';
+        }
+      }
+
+      // Theme toggle function
+      function toggleTheme() {
+        const htmlElement = document.documentElement;
+        const currentTheme = htmlElement.getAttribute('data-bs-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        htmlElement.setAttribute('data-bs-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateThemeToggleButton(newTheme);
+      }
+    </script>
+  </body>
+</html>
+
+
+
+
